@@ -35,12 +35,11 @@ app.use(express.static(__dirname + '/public'))
    .use(cookieParser());
 
 app.get('/login', function(req, res) {
-
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email user-read-playback-state';
+  var scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-library-read user-library-modify user-read-playback-position user-read-recently-played user-top-read user-read-playback-state user-modify-playback-state user-read-currently-playing';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -50,6 +49,8 @@ app.get('/login', function(req, res) {
       state: state
     }));
 });
+
+
 
 app.get('/callback', function(req, res) {
 

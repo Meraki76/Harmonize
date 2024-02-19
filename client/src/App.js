@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SpotifyWebApi from 'spotify-web-api-js';
 import axios from 'axios';
+import Dashboard from './Dashboard';
 
 const spotifyApi = new SpotifyWebApi();
 
@@ -22,7 +23,6 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    console.log("This is what we got from the URL: ", getTokenFromUrl());
     const spotifyToken = getTokenFromUrl().access_token;
     const refreshToken = getTokenFromUrl().refresh_token;
     const expiresIn = getTokenFromUrl().expires_in;
@@ -84,6 +84,17 @@ function App() {
       })
   }
 
+//   spotifyApi.getMe().then(data => {
+//     console.log("fart");
+//     console.log(data);
+//     // This logs the user's profile data. You can infer from this that the token is valid.
+//     // However, this doesn't explicitly list the scopes.
+// }).catch(err => {
+//     console.error(err);
+//     // Handle errors (e.g., token might be invalid or expired)
+// });
+
+
   return (
     <div className="App">
       {!loggedIn && <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
@@ -91,6 +102,7 @@ function App() {
         </Container>}
       {loggedIn && (
         <>
+          <Dashboard spotifyApi={spotifyApi} spotifyToken={spotifyToken} />
           <div>Now Playing: {nowPlaying.name}</div>
           <div>
             <img src={nowPlaying.albumArt} style={{ height: 150 }} />
