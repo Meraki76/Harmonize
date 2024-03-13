@@ -1,0 +1,11 @@
+Project timeline:
+
+- Spotify Auth
+- Simple music player
+- Spotify as login to store users (ethical considerations too)
+    - I made the decision to use Atlas as my project is going to be scalable.
+    - Mongoose over MongoDB
+    - Decision to use dotenv
+- UX: Making the "mp3 player" in the bottom right, nice visual sliding with react
+    - 3 different displays: covered, covered with search, open depending on mouse movement (then put snippet of code) 
+    - ^OR I have it so the text is cleard when u leave the mp3 player, maybe have a user testing seeing which is better?

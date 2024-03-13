@@ -4,117 +4,99 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import SpotifyWebApi from 'spotify-web-api-js';
 import axios from 'axios';
 import Dashboard from './Dashboard';
-
+import Sidebar from './Sidebar';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ProfilePage from './ProfilePage'; // Assume you have this component
+import FeedPage from './FeedPage'; // Assume you have this component
+import FriendsPage from './FriendsPage'; // Assume you have this component
+import './App.css';
 const spotifyApi = new SpotifyWebApi();
 
 const getTokenFromUrl = () => {
   return window.location.hash.substring(1).split('&').reduce((initial, item) => {
     let parts = item.split('=');
     initial[parts[0]] = decodeURIComponent(parts[1]);
-    return initial
+    return initial;
   }, {});
-}
+};
 
 function App() {
+  const [userProfile, setUserProfile] = useState(null);
   const [spotifyToken, setSpotifyToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
   const [expiresIn, setExpiresIn] = useState(0);
-  const [nowPlaying, setNowPlaying] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const spotifyToken = getTokenFromUrl().access_token;
-    const refreshToken = getTokenFromUrl().refresh_token;
-    const expiresIn = getTokenFromUrl().expires_in;
-    window.location.hash = "";
-    console.log("This is our spotify token: ", spotifyToken);
-    console.log("This is our refresh token: ", refreshToken);
-    console.log("This is the expiresIn: ", expiresIn);
+  const logout = () => {
+    setUserProfile(null);
+    setSpotifyToken("");
+    setRefreshToken("");
+    setLoggedIn(false);
+  };
 
-    if (spotifyToken) {
-      setSpotifyToken(spotifyToken);
-      setRefreshToken(refreshToken);
-      setExpiresIn(expiresIn);
-      spotifyApi.setAccessToken(spotifyToken);
+  useEffect(() => {
+    const { access_token, refresh_token, expires_in } = getTokenFromUrl();
+    window.location.hash = "";
+    if (access_token) {
+      setSpotifyToken(access_token);
+      setRefreshToken(refresh_token);
+      setExpiresIn(expires_in);
+      spotifyApi.setAccessToken(access_token);
       spotifyApi.getMe().then((user) => {
-        console.log(user);
+        setUserProfile({
+          displayName: user.display_name,
+          email: user.email,
+          profileImage: user.images[0]?.url || ''
+        });
       });
       setLoggedIn(true);
     }
-  })
+  }, []);
 
   useEffect(() => {
     if (!refreshToken || !expiresIn) return;
-    console.log("Setting up interval to refresh token");
     const interval = setInterval(() => {
-      console.log("Refreshing token");
       axios.get('http://localhost:8888/refresh_token', {
         params: {
           refresh_token: refreshToken
         }
-      })
-      .then(response => {
-        const { access_token } = response.data;
-        console.log(`Token refreshed: ${access_token}`); // Log the new token
-        setSpotifyToken(access_token);
-        spotifyApi.setAccessToken(access_token);
-      })
-      .catch(err => {
+      }).then(response => {
+        setSpotifyToken(response.data.access_token);
+        spotifyApi.setAccessToken(response.data.access_token);
+      }).catch(err => {
         console.error(err);
-        // Handle error, e.g., by logging out the user
       });
     }, (expiresIn - 60) * 1000); // Refresh 1 minute before token expires
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, [refreshToken, expiresIn]); // This effect runs when refreshToken or expiresIn changes
-
-  const getNowPlaying = () => {
-    spotifyApi.getMyCurrentPlaybackState()
-      .then((response) => {
-        console.log("Got response: ", response);
-        setNowPlaying({
-          name: response.item.name,
-          albumArt: response.item.album.images[0].url})
-      }).catch((err) => {
-        console.log("Error getting current playback state: ", err);
-        setNowPlaying({
-          name: "No song playing",
-          albumArt: ""
-        })
-      })
-  }
-
-//   spotifyApi.getMe().then(data => {
-//     console.log("fart");
-//     console.log(data);
-//     // This logs the user's profile data. You can infer from this that the token is valid.
-//     // However, this doesn't explicitly list the scopes.
-// }).catch(err => {
-//     console.error(err);
-//     // Handle errors (e.g., token might be invalid or expired)
-// });
-
+    return () => clearInterval(interval);
+  }, [refreshToken, expiresIn]);
 
   return (
-    <div className="App">
-      {!loggedIn && <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
-        <a className="btn btn-success btn-lg" href="http://localhost:8888/login">Login to spotify</a>
-        </Container>}
-      {loggedIn && (
-        <>
-          <Dashboard spotifyApi={spotifyApi} spotifyToken={spotifyToken} />
-          <div>Now Playing: {nowPlaying.name}</div>
-          <div>
-            <img src={nowPlaying.albumArt} style={{ height: 150 }} />
+    <Router>
+      <div className="App" style={{ minHeight: "100vh", backgroundColor: "#282c34" }}>
+        {!loggedIn ? (
+          <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+            <div style={{ textAlign: "center" }}>
+              <h1 style={{ marginBottom: "2rem", color: "#1DB954", fontSize: "3rem" }}>Harmonize</h1>
+              <p style={{ marginBottom: "2rem", color: "white", maxWidth: "400px" }}>
+                Your Spotify account will be used as an account on Harmonize.
+              </p>
+              <a className="btn btn-success btn-lg" href="http://localhost:8888/login">Login to Spotify</a>
+            </div>
+          </Container>
+        ) : (
+          <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: "#282c34" }}>
+            <Sidebar userProfile={userProfile} onLogout={logout} />
+            <Routes>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/" element={<FeedPage />} />
+              <Route path="/friends" element={<FriendsPage />} />
+            </Routes>
+            <Dashboard spotifyApi={spotifyApi} spotifyToken={spotifyToken} />
           </div>
-        </>
-      )}
-      {loggedIn && (
-        <button onClick={() => getNowPlaying()}>
-          Check Now Playing
-        </button>
-      )}
-    </div>
+        )}
+      </div>
+    </Router>
   );
 }
 
