@@ -1,11 +1,11 @@
 .sidebar {
-    width: 22rem; /* Increase sidebar width */
+    width: 22rem; 
     background-color: #15202B;
     color: white;
-    padding: 30px; /* Increase padding for more space */
+    padding: 30px; 
     box-sizing: border-box;
-    border-radius: 15px; /* More pronounced rounded corners */
-    font-size: 16px; /* Larger font size */
+    border-radius: 15px; 
+    font-size: 16px; 
 }
 
 .sidebar-header {
@@ -14,21 +14,21 @@
 }
 
 .sidebar-image {
-    width: 80px; /* Larger profile image */
+    width: 80px; 
     height: 80px;
     border-radius: 50%;
-    margin-bottom: 20px; /* More space between image and text */
+    margin-bottom: 20px; 
 }
 
 .sidebar-username {
     margin: 0;
     color: #fff;
-    font-size: 24px; /* Larger font size for username */
+    font-size: 24px; 
 }
 
 .sidebar-email {
     color: #8899a6;
-    font-size: 14px; /* More subtle email display */
+    font-size: 14px; 
 }
 
 .sidebar-menu {
@@ -40,11 +40,11 @@
 .sidebar-menu li a {
     color: #8899a6;
     text-decoration: none;
-    padding: 15px 20px; /* Larger padding for menu items */
+    padding: 15px 20px; 
     display: block;
-    border-radius: 8px; /* Rounded corners for menu items */
+    border-radius: 8px; 
     transition: background-color 0.2s, color 0.2s;
-    font-size: 18px; /* Larger text in the menu */
+    font-size: 18px;
 }
 
 .sidebar-menu li a:hover {
@@ -60,7 +60,7 @@
     color: #1DB954;
     text-decoration: none;
     transition: color 0.2s;
-    font-size: 18px; /* Larger and more noticeable logout link */
+    font-size: 18px; 
 }
 
 .sidebar-footer a:hover {

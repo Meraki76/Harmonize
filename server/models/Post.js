@@ -13,10 +13,11 @@ const postSchema = new mongoose.Schema({
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     replies: [replySchema],
     tags: {
-        artist: { type: String, default: 'none' },
-        song: { type: String, default: 'none' },
-        album: { type: String, default: 'none' }
+        artist: { type: String, default: null },
+        song: { type: String, default: null },  
+        album: { type: String, default: null }  
     }
 });
+
 
 module.exports = mongoose.model('Post', postSchema);

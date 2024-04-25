@@ -12,13 +12,13 @@ export default function Player({ spotifyToken, trackUri }) {
     if (!spotifyToken) return null;
 
     const playerStyles = {
-        activeColor: '#fff', // White color for currently playing track for contrast
-        bgColor: '#1DB954', // Your vibrant green background color
-        color: '#000', // Black for text and icons to ensure readability
-        loaderColor: '#fff', // White for the loading indicator for visibility
-        sliderColor: '#fff', // White slider for a clean look against the green background
-        trackArtistColor: '#000', // Black for artist name to ensure it stands out
-        trackNameColor: '#fff', // White for track name for visibility and contrast
+        activeColor: '#fff', 
+        bgColor: '#1DB954', 
+        color: '#000', 
+        loaderColor: '#fff', 
+        sliderColor: '#fff', 
+        trackArtistColor: '#000',
+        trackNameColor: '#fff', 
     };
     
 

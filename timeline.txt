@@ -7,5 +7,46 @@ Project timeline:
     - Mongoose over MongoDB
     - Decision to use dotenv
 - UX: Making the "mp3 player" in the bottom right, nice visual sliding with react
-    - 3 different displays: covered, covered with search, open depending on mouse movement (then put snippet of code) 
+    - 3 different displays: covered, covered with search, open depending on mouse movement (then put snippets of code) 
     - ^OR I have it so the text is cleard when u leave the mp3 player, maybe have a user testing seeing which is better?
+- Added schema for posts
+- Added routes for posts
+- Form and displaying posts (make better)
+
+- EMILY SAYS MAKE PICTURE FURTHER APART IN MP3 PLAYER (use for report (as suggestion) dont do)
+
+
+TO-DO:
+    - Clean up posts (post schema is also not finished)
+    - Make more scrollable (have middle get bigger and limit left and right side rather than opposite)
+    - Search posts
+    - Profile page and add friends
+    - add searching for people to friends
+    - how do i make sure other users works if i only have 1 spotify premium account ? U DONT :)
+
+Real plan:
+    - Search posts using tags
+        - FOR REPORT: In future will have better tags (actually connects to artist profile page or song or album to ensure consistency)
+        - add replies when you click comment
+    - Profile page:
+        -   Profile picture, name. Custom bio and users posts.
+    - Friends page with socket:
+        - For now, just search another user and u can start messaging them.
+        - FOR REPORT: Talk about how in future you will have adding each other and a better screen for direct messages
+
+
+
+Maybe unit testing: p or function (inputs that return output without side effects are easy to test, just give inputs and exprected outputs)
+
+Feedback from other report
+
+
+
+Evaluation:
+- Talk about how u feel yourself with challenges
+- ^ future plans according to this
+- Discuss with friends and get their feedback
+- ^Future plans inspired by feedback
+- Future plans + link to conclusion
+
+Conclusion: Summarise and wrap up things (with future plans too)

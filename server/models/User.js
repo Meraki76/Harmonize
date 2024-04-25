@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   displayName: String,
   email: { type: String, required: true },
   spotifyUrl: String,
-  profileImage: String, // Assuming you want to store the URL of the user's profile picture
+  profileImage: String,
   country: String,
 });
 

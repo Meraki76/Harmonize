@@ -5,7 +5,7 @@ import Player from "./Player";
 import TrackSearchResult from "./TrackSearchResult";
 
 export default function Dashboard({ spotifyApi, spotifyToken }) {
-    const [isExpanded, setIsExpanded] = useState(false); // State to track whether the dashboard is expanded
+    const [isExpanded, setIsExpanded] = useState(false); 
     const [search, setSearch] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [nowPlaying, setNowPlaying] = useState();
@@ -39,9 +39,9 @@ export default function Dashboard({ spotifyApi, spotifyToken }) {
     }, [search, spotifyToken]);
 
     const getHeight = () => {
-        if (isExpanded && searchResults.length > 0) return '800px'; // Expanded height
+        if (isExpanded && searchResults.length > 0) return '800px';
         if(searchResults.length > 0) return '250px';
-        return '150px'; // Default height
+        return '150px';
     };
 
 
@@ -56,7 +56,7 @@ export default function Dashboard({ spotifyApi, spotifyToken }) {
         transition: 'width 0.5s, height 0.5s',
         borderRadius: '10px',
         boxShadow: '0 4px 8px rgba(0,0,0,0.5)',
-        cursor: 'pointer', // Make it obvious it's interactive
+        cursor: 'pointer', 
     };
 
     return (

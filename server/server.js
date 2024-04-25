@@ -15,11 +15,12 @@ const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const User = require('./models/User');
+const postRoutes = require('./routes/postRoutes');
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const mongoDB = process.env.MONGODB_URI;
-const redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+const redirect_uri = 'http://localhost:8888/callback'; 
 
 mongoose.connect(mongoDB)
   .then(() => console.log('MongoDB connected'))
@@ -38,7 +39,11 @@ const app = express();
 
 app.use(express.static(__dirname + '/public'))
    .use(cors())
-   .use(cookieParser());
+   .use(cookieParser())
+   .use(express.json()) 
+   .use(express.urlencoded({ extended: true })); 
+
+app.use('/posts', postRoutes);
 
 app.get('/login', function(req, res) {
   const state = generateRandomString(16);
@@ -141,7 +146,7 @@ app.get('/refresh_token', async function(req, res) {
     const body = response.data;
     res.send({
       'access_token': body.access_token,
-      'refresh_token': body.refresh_token // Note: Spotify may not return a new refresh token
+      'refresh_token': body.refresh_token 
     });
   } catch (error) {
     console.error('Error refreshing access token:', error);

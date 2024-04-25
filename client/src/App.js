@@ -5,11 +5,13 @@ import SpotifyWebApi from 'spotify-web-api-js';
 import axios from 'axios';
 import Dashboard from './Dashboard';
 import Sidebar from './Sidebar';
+import { SearchProvider } from './SearchContext';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProfilePage from './ProfilePage'; // Assume you have this component
 import FeedPage from './FeedPage'; // Assume you have this component
 import FriendsPage from './FriendsPage'; // Assume you have this component
 import './App.css';
+import SearchBar from './SearchBar';
 const spotifyApi = new SpotifyWebApi();
 
 const getTokenFromUrl = () => {
@@ -21,6 +23,7 @@ const getTokenFromUrl = () => {
 };
 
 function App() {
+  
   const [userProfile, setUserProfile] = useState(null);
   const [spotifyToken, setSpotifyToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
@@ -44,6 +47,7 @@ function App() {
       spotifyApi.setAccessToken(access_token);
       spotifyApi.getMe().then((user) => {
         setUserProfile({
+          spotifyId: user.id,
           displayName: user.display_name,
           email: user.email,
           profileImage: user.images[0]?.url || ''
@@ -87,15 +91,19 @@ function App() {
         ) : (
           <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: "#282c34" }}>
             <Sidebar userProfile={userProfile} onLogout={logout} />
+            <SearchProvider>
+            <SearchBar />
             <Routes>
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/" element={<FeedPage />} />
+              <Route path="/" element={<FeedPage userProfile={userProfile} />} />
               <Route path="/friends" element={<FriendsPage />} />
             </Routes>
+            </SearchProvider>
             <Dashboard spotifyApi={spotifyApi} spotifyToken={spotifyToken} />
           </div>
         )}
       </div>
+      
     </Router>
   );
 }
