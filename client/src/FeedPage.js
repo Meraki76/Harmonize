@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import axios from 'axios';
 import { SearchContext } from './SearchContext'; // Make sure this is set up as described earlier
@@ -46,13 +47,29 @@ function FeedPage({ userProfile }) {
         }
     };
 
+    useEffect(() => {
+        fetchPosts(); // Assuming this function fetches the posts and logs them
+      }, [userProfile]);
+
+      const deletePost = async (postId) => {
+        try {
+            await axios.delete(`http://localhost:8888/posts/${postId}`);
+            fetchPosts(); // Refetch posts to update the UI
+        } catch (error) {
+            console.error('Failed to delete the post:', error);
+            alert('Failed to delete the post');
+        }
+    };
+      
     const renderPosts = () => {
         return posts.map((post) => (
             <Card key={post._id} className="mb-3">
                 <Card.Body>
                     <div className="post-header">
                         <div className="user-info">
+                        <Link to={`/profile/${post.user.displayName}`}>
                             <img src={post.user.profileImage || 'https://via.placeholder.com/150'} alt="Profile" className="post-profile-image" />
+                        </Link>
                             <div>{post.user.displayName}</div> 
                         </div>
                         <div className="tag-section">
@@ -66,7 +83,7 @@ function FeedPage({ userProfile }) {
                         <div className="button-section">
                             <button className="like-button">Like</button>
                             <button className="reply-button">Reply</button>
-                            {userProfile && userProfile.spotifyId === post.user.spotifyId && <button className="delete-button">Delete</button>}
+                            {userProfile && userProfile.spotifyId === post.user.spotifyId && <button className="delete-button" onClick={() => deletePost(post._id)}>Delete</button>}
                         </div>
                     </div>
                 </Card.Body>

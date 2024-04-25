@@ -14,6 +14,7 @@ import './App.css';
 import SearchBar from './SearchBar';
 const spotifyApi = new SpotifyWebApi();
 
+
 const getTokenFromUrl = () => {
   return window.location.hash.substring(1).split('&').reduce((initial, item) => {
     let parts = item.split('=');
@@ -94,7 +95,7 @@ function App() {
             <SearchProvider>
             <SearchBar />
             <Routes>
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/:displayName" element={<ProfilePage />} />
               <Route path="/" element={<FeedPage userProfile={userProfile} />} />
               <Route path="/friends" element={<FriendsPage />} />
             </Routes>

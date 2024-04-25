@@ -1,8 +1,19 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Sidebar.css'; // Ensure this is correctly linked
-import { Link } from 'react-router-dom';
 
 const Sidebar = ({ userProfile, onLogout }) => {
+    const navigate = useNavigate();
+
+    const handleProfileClick = (e) => {
+        e.preventDefault(); // Prevent the default link behavior
+        if (userProfile && userProfile.displayName) {
+            navigate(`/profile/${userProfile.displayName}`);
+        } else {
+            alert('Profile data is not available.');
+        }
+    };
+
     const displayName = userProfile ? userProfile.displayName : 'Unknown';
     const email = userProfile ? userProfile.email : 'No email provided';
     const profileImage = userProfile && userProfile.profileImage ? userProfile.profileImage : 'https://via.placeholder.com/150';
@@ -15,7 +26,7 @@ const Sidebar = ({ userProfile, onLogout }) => {
                 <p className="sidebar-email">{email}</p>
             </div>
             <ul className="sidebar-menu">
-                <li><Link to="/profile">Profile</Link></li>
+                <li><a href="/profile" onClick={handleProfileClick}>Profile</a></li> {/* Using 'a' tag with onClick handler for dynamic navigation */}
                 <li><Link to="/">Feed</Link></li>
                 <li><Link to="/friends">Friends</Link></li>
             </ul>

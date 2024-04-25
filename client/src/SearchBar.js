@@ -1,14 +1,37 @@
-// SearchBar.js
-import React, { useContext, useState } from 'react';
-import { SearchContext } from './SearchContext'; // Assuming this is set up for global state management
+import React, { useState, useContext } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { SearchContext } from './SearchContext';
+import axios from 'axios';
 
 function SearchBar() {
     const [searchTerm, setSearchTerm] = useState('');
     const { setSearchCriteria } = useContext(SearchContext);
+    const location = useLocation();
+    const navigate = useNavigate();
 
-    const handleSearch = (event) => {
+    const handleSearch = async (event) => {
         event.preventDefault();
-        setSearchCriteria(searchTerm);
+        if (location.pathname.includes('/profile')) {
+            // When in profile page, search for users by displayName
+            try {
+                const response = await axios.get(`http://localhost:8888/users/search/${searchTerm}`);
+                if (response.data.length > 0) {
+                    navigate(`/profile/${response.data[0].displayName}`); // Navigate using displayName
+                } else {
+                    alert('No users found'); // This should be triggering already if no users are found
+                }
+            } catch (error) {
+                console.error('Error searching for users:', error);
+                if (error.response && error.response.status === 404) {
+                    alert('No users found');
+                } else {
+                    alert('Failed to perform search');
+                }
+            }
+        } else {
+            // Default behavior in other parts of the app
+            setSearchCriteria(searchTerm);
+        }
     };
 
     return (
@@ -16,7 +39,7 @@ function SearchBar() {
             <form onSubmit={handleSearch}>
                 <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder={location.pathname.includes('/profile') ? "Search users by name..." : "Search posts..."}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />

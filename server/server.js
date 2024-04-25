@@ -16,6 +16,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const postRoutes = require('./routes/postRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -44,6 +45,7 @@ app.use(express.static(__dirname + '/public'))
    .use(express.urlencoded({ extended: true })); 
 
 app.use('/posts', postRoutes);
+app.use('/users', userRoutes);
 
 app.get('/login', function(req, res) {
   const state = generateRandomString(16);

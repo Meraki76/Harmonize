@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
             ]};
         }
 
-        const posts = await Post.find(query).populate('user', 'displayName profileImage').sort({ createdAt: -1 });
+        const posts = await Post.find(query).populate('user', 'displayName profileImage spotifyId').sort({ createdAt: -1 });
         res.json(posts);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -55,5 +55,18 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        await post.deleteOne();
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router;

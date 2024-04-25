@@ -27,9 +27,12 @@ TO-DO:
 Real plan:
     - Search posts using tags
         - FOR REPORT: In future will have better tags (actually connects to artist profile page or song or album to ensure consistency)
-        - add replies when you click comment
+        - add likes and replies and delete maybe just for report (maybe nah)
+    DONE
+
     - Profile page:
-        -   Profile picture, name. Custom bio and users posts.
+        -   Profile picture, name, and users posts. DONE DONE DONEEEEE
+
     - Friends page with socket:
         - For now, just search another user and u can start messaging them.
         - FOR REPORT: Talk about how in future you will have adding each other and a better screen for direct messages
