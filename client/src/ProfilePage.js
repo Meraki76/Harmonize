@@ -1,3 +1,4 @@
+// Import React utilities and hooks, React Router utilities for navigation, Axios for HTTP requests, and React Bootstrap components.
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MessageContext } from './MessageContext';
@@ -5,16 +6,19 @@ import axios from 'axios';
 import { Container, Card, Button } from 'react-bootstrap';
 
 function ProfilePage({ userProfile, spotifyToken }) {
-    const { displayName } = useParams(); // Fetch the display name from URL
+    // Retrieve display name from the URL parameters.
+    const { displayName } = useParams();
+    // Access the MessageContext for conversation management.
     const { startConversation } = useContext(MessageContext);
+    // useNavigate hook for programmatically navigating to other routes.
     const navigate = useNavigate();
+    // Local state to manage user data and posts.
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
-    const [isFollowing, setIsFollowing] = useState(false);  // State to track if the current user is following
+    const [isFollowing, setIsFollowing] = useState(false);  // State to manage follow status.
 
-
-
+    // Effect hook to fetch user data and related posts on component mount and when displayName changes.
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -23,7 +27,7 @@ function ProfilePage({ userProfile, spotifyToken }) {
                     const userData = response.data[0];
                     setUser(userData);
                     setIsFollowing(userData.followers.includes(userProfile.userId));
-                    fetchPostsByDisplayName(displayName); // Fetch posts for this user using display name
+                    fetchPostsByDisplayName(displayName);  // Fetch posts of the user.
                 } else {
                     setError('User not found');
                 }
@@ -35,7 +39,7 @@ function ProfilePage({ userProfile, spotifyToken }) {
         fetchUserData();
     }, [displayName, userProfile.userId]);
 
-    // Fetch posts based on the display name
+    // Function to fetch posts by a specific user.
     const fetchPostsByDisplayName = (displayName) => {
         axios.get(`http://localhost:8888/posts`, { params: { search: displayName } })
             .then(response => {
@@ -47,6 +51,7 @@ function ProfilePage({ userProfile, spotifyToken }) {
             });
     };
 
+    // Function to render individual posts.
     const renderPosts = () => {
         return posts.map((post) => (
             <Card key={post._id} className="mb-3">
@@ -68,31 +73,33 @@ function ProfilePage({ userProfile, spotifyToken }) {
         ));
     };
 
+    // Function to start a new conversation.
     const handleSendMessage = () => {
-      const otherUserId = user._id;
-      const currentUserId = userProfile.userId;
-      
-      fetch('http://localhost:8888/api/conversations/start', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ currentUserId, otherUserId })
-      })
-      .then(response => response.json())
-      .then(conversation => {
-          navigate(`/chat/${conversation._id}`);
-      })
-      .catch(error => {
-          console.error('Error starting conversation:', error);
-          alert('Failed to start conversation');
-      });
-  };
+        const otherUserId = user._id;
+        const currentUserId = userProfile.userId;
+        fetch('http://localhost:8888/api/conversations/start', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ currentUserId, otherUserId })
+        })
+        .then(response => response.json())
+        .then(conversation => {
+            navigate(`/chat/${conversation._id}`);
+        })
+        .catch(error => {
+            console.error('Error starting conversation:', error);
+            alert('Failed to start conversation');
+        });
+    };
 
+    // Render error state.
     if (error) {
         return <Container className="middle-content"><p>{error}</p></Container>;
     }
 
+    // Function to follow a user.
     const followUser = async () => {
         if (!userProfile || userProfile.userId === user._id) {
           alert("You cannot follow yourself.");
@@ -116,6 +123,7 @@ function ProfilePage({ userProfile, spotifyToken }) {
         }
       };
 
+    // Function to unfollow a user.
     const unfollowUser = async (userIdToUnfollow) => {
         await axios.post(`http://localhost:8888/users/${userIdToUnfollow}/unfollow`, { userId: userProfile.userId })
             .then(() => {
@@ -131,7 +139,8 @@ function ProfilePage({ userProfile, spotifyToken }) {
                 alert("Failed to unfollow");
             });
     };
-    
+
+    // Render user profile and posts.
     return (
         <Container className="middle-content">
             {user ? (

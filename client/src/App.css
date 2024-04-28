@@ -1,146 +1,146 @@
-/* App.css */
-.app-layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: #282c34;
-    overflow: hidden; 
-  }
-  
-  html, body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden; 
-  }
-  
-  .sidebar {
-    width: 300px; 
-    height: 100vh;
-    overflow: auto; 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-  }
-  
-  .middle-content {
-    color: white;
-    flex-grow: 1; 
-    padding: 20px; 
-    margin-left: 300px;
-    margin-right: 650px; 
-    overflow-y: auto;
-    height: 100vh; 
-    scrollbar-width: thin;
-    scrollbar-color: #888 #282c34; 
-  }
-  
-  .middle-content::-webkit-scrollbar {
-    width: 12px; 
-  }
-  
-  .middle-content::-webkit-scrollbar-track {
-    background: #282c34; 
-  }
-  
-  .middle-content::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 6px; 
-    border: 3px solid #282c34; 
-  }
-  
-  .dashboard {
-    width: 650px; 
-    flex-shrink: 0; 
-    height: 100vh;
-    overflow: auto;
-  }
+/* App.css - Main styling for the application layout */
 
-.card {
-    background-color: #fff; 
-    border: 1px solid #e1e8ed; 
-    border-radius: 16px; 
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); 
-    margin-bottom: 20px; 
-    margin-top: 10px;
-    transition: box-shadow 0.3s ease-in-out; 
-  }
-  
-  .card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.18), 0 5px 20px rgba(0,0,0,0.20); 
-  }
-  
-  .card-body {
-    padding: 20px; 
-  }
-  
-  .card-title {
-    font-size: 20px; 
-    font-weight: bold;
-    margin-bottom: 10px; 
-  }
-  
-  .card-text {
-    font-size: 16px; 
-    margin-top: 15px;
-  }
-  
-  .card-subtitle {
-    font-size: 14px; 
-    margin-top: -5px; 
-    color: #657786; 
-  }
-  
-  .form-control {
-    background-color: #f5f8fa; 
-    border: 1px solid #e1e8ed; 
-    border-radius: 20px; 
-    padding: 10px 20px; 
-  }
-  
-  .btn-primary {
-    background-color: #1da1f2; 
-    border-color: #1da1f2;
-    border-radius: 20px; 
-    padding: 10px 20px;
-    font-weight: bold;
-  }
-  
-  .btn-primary:hover {
-    background-color: #1991db; 
-    border-color: #1991db;
-  }
-  .post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: fkex-start; 
+/* Global styles */
+html, body {
+  height: 100%;        /* Full height for the application */
+  margin: 0;           /* Remove default margin */
+  overflow: hidden;    /* Prevent scrolling on the entire document */
 }
 
+/* Layout containers */
+.app-layout {
+  display: flex;               /* Flexbox layout for the main container */
+  min-height: 100vh;           /* Minimum height to fill the viewport */
+  background-color: #282c34;   /* Dark background for the app */
+  overflow: hidden;            /* Prevent scrolling within the app layout */
+}
 
+.sidebar {
+  width: 300px;                /* Fixed width for the sidebar */
+  height: 100vh;               /* Full viewport height */
+  overflow: auto;              /* Enable scrolling inside the sidebar */
+  position: fixed;             /* Fixed position to stay visible */
+  top: 0;                      /* Align top */
+  left: 0;                     /* Align left */
+}
 
-.user-info {
-    display: flex;
-    align-items: center; 
+.middle-content {
+  color: white;                    /* Text color for content */
+  flex-grow: 1;                    /* Flex grow to use available space */
+  padding: 20px;                   /* Padding around the content */
+  margin-left: 300px;              /* Margin equal to the sidebar's width */
+  margin-right: 650px;             /* Margin for the right space */
+  overflow-y: auto;                /* Enable vertical scrolling */
+  height: 100vh;                   /* Full viewport height */
+  scrollbar-width: thin;           /* Thin scrollbar for modern look */
+  scrollbar-color: #888 #282c34;   /* Scrollbar colors */
+}
+
+.middle-content::-webkit-scrollbar {
+  width: 12px;                     /* Scrollbar width */
+}
+
+.middle-content::-webkit-scrollbar-track {
+  background: #282c34;             /* Scrollbar track color */
+}
+
+.middle-content::-webkit-scrollbar-thumb {
+  background-color: #888;          /* Scrollbar thumb color */
+  border-radius: 6px;              /* Rounded corners for the thumb */
+  border: 3px solid #282c34;       /* Border to separate thumb from track */
+}
+
+.dashboard {
+  width: 650px;                /* Fixed width */
+  flex-shrink: 0;              /* Prevent shrinking */
+  height: 100vh;               /* Full viewport height */
+  overflow: auto;              /* Enable scrolling inside the dashboard */
+}
+
+/* Styling for content cards */
+.card {
+  background-color: #fff;                          /* White background color */
+  border: 1px solid #e1e8ed;                       /* Subtle border */
+  border-radius: 16px;                             /* Rounded corners */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12),          /* Soft shadow for depth */
+             0 1px 2px rgba(0,0,0,0.24);
+  margin-bottom: 20px;                             /* Margin for spacing */
+  margin-top: 10px;
+  transition: box-shadow 0.3s ease-in-out;          /* Smooth transition for hover effects */
+}
+
+.card:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.18),         /* Deeper shadow on hover */
+             0 5px 20px rgba(0,0,0,0.20);
+}
+
+.card-body {
+  padding: 20px;                                   /* Padding inside the card */
+}
+
+.card-title, .card-subtitle, .card-text {
+  font-size: 20px, 14px, 16px;                     /* Font sizes for card texts */
+  margin-bottom: 10px;                             /* Spacing below the title */
+}
+
+.card-subtitle {
+  color: #657786;                                  /* Subtle color for subtitle */
+  margin-top: -5px;                                /* Adjust top margin for alignment */
+}
+
+/* Form elements styling */
+.form-control {
+  background-color: #f5f8fa;                       /* Light background color */
+  border: 1px solid #e1e8ed;                       /* Matching border color */
+  border-radius: 20px;                             /* Rounded edges */
+  padding: 10px 20px;                              /* Padding for text inside */
+}
+
+.btn-primary {
+  background-color: #1da1f2;                       /* Primary button color */
+  border-color: #1da1f2;                           /* Matching border color */
+  border-radius: 20px;                             /* Rounded edges */
+  padding: 10px 20px;                              /* Comfortable padding */
+  font-weight: bold;                               /* Bold text */
+}
+
+.btn-primary:hover {
+  background-color: #1991db;                       /* Darker color on hover */
+  border-color: #1991db;                           /* Matching border color on hover */
+}
+
+/* Post header styling */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;                         /* Align items to start vertically */
+}
+
+/* User and post interaction styling */
+.user-info, .tag-section {
+  display: flex;                                   /* Flex layout for alignment */
+  align-items: center;                             /* Center items vertically */
 }
 
 .tag-section {
-    color: #4a9eda; 
-    font-style: italic; 
-    text-align: right; 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; 
+  color: #4a9eda;                                  /* Stylish color for tags */
+  font-style: italic;                              /* Italic style for a different look */
+  text-align: right;                               /* Align text to the right */
+  flex-direction: column;                          /* Stack items vertically */
+  align-items: flex-end;                           /* Align items to the end */
 }
 
 .tag {
-    margin-bottom: 3px; 
+  margin-bottom: 3px;                              /* Margin for spacing between tags */
 }
 
 .post-profile-image {
-    width: 50px; 
-    height: 50px; 
-    border-radius: 50%; 
-    margin-right: 15px;
+  width: 50px;                                     /* Fixed width */
+  height: 50px;                                    /* Fixed height */
+  border-radius: 50%;                              /* Circular shape */
+  margin-right: 15px;                              /* Right margin for spacing */
 }
 
 .post-main-content {
-    margin-top: 20px; 
+  margin-top: 20px;                                /* Margin for top spacing */
 }

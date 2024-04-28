@@ -1,34 +1,63 @@
-/**
- * This is an example of a basic node.js script that performs
- * the Authorization Code oAuth2 flow to authenticate against
- * the Spotify Accounts.
- *
- * For more information, read
- * https://developer.spotify.com/documentation/web-api/tutorials/code-flow
- */
+// Environment configuration for secure handling of credentials and URIs
 require('dotenv').config();
+
+// Core dependencies for server setup and API management
 const express = require('express');
-const axios = require('axios').default;
-const crypto = require('crypto');
-const cors = require('cors');
-const querystring = require('querystring');
-const cookieParser = require('cookie-parser');
-const mongoose = require('mongoose');
+const axios = require('axios').default; // For making HTTP requests to external APIs, like Spotify
+const crypto = require('crypto'); // For generating cryptographically strong random strings
+const cors = require('cors'); // To enable CORS for cross-origin requests
+const querystring = require('querystring'); // For URL query string manipulation
+const cookieParser = require('cookie-parser'); // To parse cookies attached to the client request object
+const mongoose = require('mongoose'); // MongoDB framework for handling schemas and models
+
+// Import User and Conversation models to interact with the MongoDB database
 const User = require('./models/User');
+const Conversation = require('./models/Conversation');
+
+// Import routes for handling requests for posts and users
 const postRoutes = require('./routes/postRoutes');
 const userRoutes = require('./routes/userRoutes');
-const Conversation = require('./models/Conversation');
+
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const mongoDB = process.env.MONGODB_URI;
 const redirect_uri = 'http://localhost:8888/callback'; 
 
+// Server initialization
+const app = express();
+const stateKey = 'spotify_auth_state'; // Key for managing OAuth2 state parameter
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+      origin: "http://localhost:3000", // Client-side URL for CORS policy
+      methods: ["GET", "POST"],
+      credentials: true
+  }
+});
 
+// Middleware setup
+app.use(express.static(__dirname + '/public'))
+   .use(cors())
+   .use(cookieParser())
+   .use(express.json()) 
+   .use(express.urlencoded({ extended: true })); 
 
+app.use(cors({
+    origin: 'http://localhost:3000', // This allows only your client's origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'] 
+  }));
+
+// Use routes for posts and users
+app.use('/posts', postRoutes);
+app.use('/users', userRoutes);
+
+// MongoDB connection
 mongoose.connect(mongoDB)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
+// Function to generate a random state string for OAuth2 authentication
 const generateRandomString = (length) => {
   return crypto
   .randomBytes(60)
@@ -36,51 +65,42 @@ const generateRandomString = (length) => {
   .slice(0, length);
 }
 
-const stateKey = 'spotify_auth_state';
-
-const app = express();
-
-app.use(express.static(__dirname + '/public'))
-   .use(cors())
-   .use(cookieParser())
-   .use(express.json()) 
-   .use(express.urlencoded({ extended: true })); 
-
-app.use('/posts', postRoutes);
-app.use('/users', userRoutes);
-
-app.use(cors({
-  origin: 'http://localhost:3000', // This allows only your client's origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Optional: specify methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Optional: specify headers
-}));
-
+// Redirect user for Spotify login and handle the authorization callback
 app.get('/login', function(req, res) {
   const state = generateRandomString(16);
   res.cookie(stateKey, state);
 
+  // Define scopes needed from Spotify
   const scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-library-read user-library-modify user-read-playback-position user-read-recently-played user-top-read user-read-playback-state user-modify-playback-state user-read-currently-playing';
+  // Redirect to Spotify's authorization page
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
       client_id: client_id,
-      scope: scope,
+      scope: scope, 
       redirect_uri: redirect_uri,
       state: state
     }));
 });
 
+// Callback route from Spotify OAuth
 app.get('/callback', async function(req, res) {
+  // Extract the authorization code and state from the request query parameters
   const code = req.query.code || null;
   const state = req.query.state || null;
+
+  // Retrieve the stored state from cookies if available
   const storedState = req.cookies ? req.cookies[stateKey] : null;
 
+  // Check if the state is null or does not match the stored state
   if (state === null || state !== storedState) {
+      // If there's a state mismatch, redirect the user to an error page with an appropriate message
       res.redirect('/#' +
           querystring.stringify({
               error: 'state_mismatch'
           }));
   } else {
+      // If the state is valid, clear the stored state cookie
       res.clearCookie(stateKey);
       const authOptions = {
           method: 'post',
@@ -102,11 +122,14 @@ app.get('/callback', async function(req, res) {
           const access_token = body.access_token,
                 refresh_token = body.refresh_token,
                 expires_in = body.expires_in;
+
+          // Fetch user profile from Spotify
           const profileResponse = await axios.get('https://api.spotify.com/v1/me', {
               headers: { 'Authorization': 'Bearer ' + access_token }
           });
           const userProfile = profileResponse.data;
-
+          
+          // Upsert user into the database
           await User.findOneAndUpdate(
               { spotifyId: userProfile.id },
               {
@@ -141,6 +164,7 @@ app.get('/callback', async function(req, res) {
   }
 });
 
+// Refresh token route
 app.get('/refresh_token', async function(req, res) {
   const refresh_token = req.query.refresh_token;
   const authOptions = {
@@ -169,8 +193,8 @@ app.get('/refresh_token', async function(req, res) {
   }
 });
 
-// Server-side: Add this endpoint in your server setup
-// Server-side: Modify your endpoint to use passed user IDs
+
+// Start or retrieve a conversation between two users
 app.post('/api/conversations/start', async (req, res) => {
   const { currentUserId, otherUserId } = req.body;
   try {
@@ -193,6 +217,7 @@ app.post('/api/conversations/start', async (req, res) => {
   }
 });
 
+// Fetch a conversation by its ID
 app.get('/api/conversations/:conversationId', async (req, res) => {
   const { conversationId } = req.params;
   try {
@@ -210,6 +235,7 @@ app.get('/api/conversations/:conversationId', async (req, res) => {
   }
 });
 
+// Fetch all conversations for a user
 app.get('/api/conversations/user/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
@@ -232,6 +258,7 @@ app.get('/api/conversations/user/:userId', async (req, res) => {
   }
 });
 
+// Follow a user
 app.post('/users/:id/follow', async (req, res) => {
   const { id } = req.params; // the user to be followed
   const { userId } = req.body; // the user who wants to follow
@@ -261,6 +288,7 @@ app.post('/users/:id/follow', async (req, res) => {
   }
 });
 
+// Unfollow a user
 app.post('/users/:id/unfollow', async (req, res) => {
   const { id } = req.params; // the user to be unfollowed
   const { userId } = req.body; // the user who wants to unfollow
@@ -291,20 +319,9 @@ app.post('/users/:id/unfollow', async (req, res) => {
   }
 });
 
-
-
-const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  cors: {
-      origin: "http://localhost:3000", // Allow only your client's origin
-      methods: ["GET", "POST"], // Optional: specify allowed methods
-      credentials: true // Optional: if credentials need to be sent
-  }
-});
-
-
 const users = {}; // Maps userId to socketId
 
+// Socket.IO connection for real-time messaging
 io.on('connection', socket => {
     console.log('User connected:', socket.id);
 

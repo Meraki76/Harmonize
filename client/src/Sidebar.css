@@ -1,69 +1,82 @@
+/* Sidebar styles - Defines the look and feel of the sidebar component */
+
+/* Main Sidebar styling */
 .sidebar {
-    width: 22rem; 
-    background-color: #15202B;
-    color: white;
-    padding: 30px; 
-    box-sizing: border-box;
-    border-radius: 15px; 
-    font-size: 16px; 
+    width: 22rem;                       /* Width of the sidebar */
+    background-color: #15202B;          /* Dark background color */
+    color: white;                       /* Text color */
+    padding: 30px;                      /* Padding around the content inside the sidebar */
+    box-sizing: border-box;             /* Adjusts box model to include padding and border in the width and height */
+    border-radius: 15px;                /* Rounded corners of the sidebar */
+    font-size: 16px;                    /* Default font size */
 }
 
+/* Sidebar Header */
 .sidebar-header {
-    text-align: center;
-    margin-bottom: 30px;
+    text-align: center;                 /* Center align the content */
+    margin-bottom: 30px;                /* Bottom margin for spacing */
 }
 
+/* Image styling inside the sidebar */
 .sidebar-image {
-    width: 80px; 
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 20px; 
+    width: 80px;                        /* Width of the image */
+    height: 80px;                       /* Height of the image */
+    border-radius: 50%;                 /* Makes the image circular */
+    margin-bottom: 20px;                /* Spacing below the image */
 }
 
+/* Username styling in the sidebar */
 .sidebar-username {
-    margin: 0;
-    color: #fff;
-    font-size: 24px; 
+    margin: 0;                          /* Removes default margin */
+    color: #fff;                        /* White color text for better visibility */
+    font-size: 24px;                    /* Larger text size for emphasis */
 }
 
+/* Email styling below the username */
 .sidebar-email {
-    color: #8899a6;
-    font-size: 14px; 
+    color: #8899a6;                     /* Subtle color for less emphasis */
+    font-size: 14px;                    /* Smaller text size */
 }
 
+/* Menu styling in the sidebar */
 .sidebar-menu {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 30px;
+    list-style: none;                   /* Removes bullet points from the list */
+    padding: 0;                         /* Removes padding */
+    margin-bottom: 30px;                /* Bottom margin for spacing */
 }
 
+/* Link styling within the menu */
 .sidebar-menu li a {
-    color: #8899a6;
-    text-decoration: none;
-    padding: 15px 20px; 
-    display: block;
-    border-radius: 8px; 
-    transition: background-color 0.2s, color 0.2s;
-    font-size: 18px;
+    color: #8899a6;                     /* Subtle text color */
+    text-decoration: none;              /* Removes underline from links */
+    padding: 15px 20px;                 /* Padding for touch target size */
+    display: block;                     /* Makes the link block level */
+    border-radius: 8px;                 /* Rounded corners for the links */
+    transition: background-color 0.2s, color 0.2s;  /* Smooth transition for hover effects */
+    font-size: 18px;                    /* Larger text size for readability */
 }
 
+/* Hover effect for links */
 .sidebar-menu li a:hover {
-    background-color: #1B2940;
-    color: #1DA1F2;
+    background-color: #1B2940;          /* Darker background on hover */
+    color: #1DA1F2;                     /* Bright color change on hover */
 }
 
+/* Footer section of the sidebar */
 .sidebar-footer {
-    text-align: center;
+    text-align: center;                 /* Center alignment of footer content */
 }
 
+/* Link styling in the footer */
 .sidebar-footer a {
-    color: #1DB954;
-    text-decoration: none;
-    transition: color 0.2s;
-    font-size: 18px; 
+    color: #1DB954;                     /* Distinct color for differentiation */
+    text-decoration: none;              /* Removes underline */
+    transition: color 0.2s;             /* Smooth color transition on hover */
+    font-size: 18px;                    /* Consistent font size with other links */
 }
 
+/* Hover effect for footer links */
 .sidebar-footer a:hover {
-    color: #1DA1F2;
-    text-decoration: underline;
+    color: #1DA1F2;                     /* Color change on hover */
+    text-decoration: underline;         /* Adds underline on hover for emphasis */
 }

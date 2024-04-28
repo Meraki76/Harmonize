@@ -1,26 +1,33 @@
+// Import necessary React hooks, router link, Bootstrap components, Axios for HTTP requests, and SearchContext.
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Form, Button, Card, FormCheck } from 'react-bootstrap';
 import axios from 'axios';
-import { SearchContext } from './SearchContext'; // Make sure this is set up as described earlier
+import { SearchContext } from './SearchContext'; // Context for sharing search criteria across components
 
 function FeedPage({ userProfile }) {
+    // Context to access global search criteria.
     const { searchCriteria } = useContext(SearchContext);
+    // State to handle the content of a new post.
     const [content, setContent] = useState('');
+    // State for managing tags related to artist, song, and album.
     const [tags, setTags] = useState({ artist: '', song: '', album: '' });
+    // State to store the list of posts fetched from the server.
     const [posts, setPosts] = useState([]);
-    const [showFollowedPostsOnly, setShowFollowedPostsOnly] = useState(false); // State for checkbox
+    // State to toggle between all posts or only those from followed users.
+    const [showFollowedPostsOnly, setShowFollowedPostsOnly] = useState(false);
 
+    // Function to fetch posts based on the current filters and toggle state.
     const fetchPosts = async (followedOnly = showFollowedPostsOnly) => {
         try {
             const userId = userProfile ? userProfile.userId : null;
             const endpoint = `http://localhost:8888/posts`;
             const params = {
-                artist: tags.artist, 
-                song: tags.song, 
-                album: tags.album, 
+                artist: tags.artist,
+                song: tags.song,
+                album: tags.album,
                 search: searchCriteria,
-                followedOnly: followedOnly, 
+                followedOnly: followedOnly,
                 userId: userId
             };
             const response = await axios.get(endpoint, { params });
@@ -30,10 +37,12 @@ function FeedPage({ userProfile }) {
         }
     };
 
+    // Fetch posts when the component mounts and when search criteria or tags change.
     useEffect(() => {
         fetchPosts();
-    }, [searchCriteria, tags]); 
+    }, [searchCriteria, tags]);
 
+    // Handle the form submission for creating a new post.
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!userProfile) {
@@ -56,6 +65,7 @@ function FeedPage({ userProfile }) {
         }
     };
 
+    // Toggle the state to show only posts from followed users and refetch posts.
     const toggleShowFollowedPostsOnly = () => {
         setShowFollowedPostsOnly(prevState => {
             const newState = !prevState;
@@ -63,12 +73,13 @@ function FeedPage({ userProfile }) {
             return newState;
         });
     };
-    
 
+    // Fetch posts when the toggle for showing followed posts only changes.
     useEffect(() => {
         fetchPosts(); // This will now be called whenever the checkbox value changes
     }, [showFollowedPostsOnly]);
 
+    // Function to delete a post.
     const deletePost = async (postId) => {
         try {
             await axios.delete(`http://localhost:8888/posts/${postId}`);
@@ -78,7 +89,8 @@ function FeedPage({ userProfile }) {
             alert('Failed to delete the post');
         }
     };
-    
+
+    // Function to like a post and update the post's state.
     const likePost = async (postId) => {
         try {
             const { data } = await axios.post(`http://localhost:8888/posts/${postId}/like`, { userId: userProfile.userId });
@@ -92,16 +104,17 @@ function FeedPage({ userProfile }) {
             console.error('Error liking the post:', error);
         }
     };
-    
+
+    // Function to render posts using the Card component.
     const renderPosts = () => {
         return posts.map((post) => (
             <Card key={post._id} className="mb-3">
                 <Card.Body>
                     <div className="post-header">
                         <div className="user-info">
-                        <Link to={`/profile/${post.user.displayName}`}>
-                            <img src={post.user.profileImage || 'https://via.placeholder.com/150'} alt="Profile" className="post-profile-image" />
-                        </Link>
+                            <Link to={`/profile/${post.user.displayName}`}>
+                                <img src={post.user.profileImage || 'https://via.placeholder.com/150'} alt="Profile" className="post-profile-image" />
+                            </Link>
                             <div>{post.user.displayName}</div>
                         </div>
                         <div className="tag-section">
@@ -114,7 +127,7 @@ function FeedPage({ userProfile }) {
                         <Card.Text>{post.content}</Card.Text>
                         <div className="button-section">
                             <button className="like-button" onClick={() => likePost(post._id)}>
-                            Like ({post.likes.length})
+                                Like ({post.likes.length})
                             </button>
                             <button className="reply-button">Reply</button>
                             {userProfile && userProfile.spotifyId === post.user.spotifyId && <button className="delete-button" onClick={() => deletePost(post._id)}>Delete</button>}
@@ -125,6 +138,7 @@ function FeedPage({ userProfile }) {
         ));
     };
 
+    // Main component rendering.
     return (
         <Container className="middle-content">
             <h1>Feed Page</h1>
