@@ -28,20 +28,21 @@ Real plan:
     - Search posts using tags
         - FOR REPORT: In future will have better tags (actually connects to artist profile page or song or album to ensure consistency)
         - added delete (working :))
-
-        - add likes (purely just number go up?)
+        - add likes (done)
 
         - leave replies maybe just for report
 
     - Profile page:
         -   Profile picture, name, and users posts. DONE DONE DONEEEEE
         -   click feedpage pfp and go to profile. done
-
         -   follow button, then on feedpage option to show posts by ONLY who u follow or ALL posts.
 
     - Friends page with socket:
-        - For now, just search another user and u can start messaging them.
-        - FOR REPORT: Talk about how in future you will have adding each other and a better screen for direct messages
+        - For now, just search another user and u can start messaging them. DONE
+        - stop being able to message self DONE
+        - make friends page work DONE
+        
+- replies
 
 
 Maybe unit testing: p or function (inputs that return output without side effects are easy to test, just give inputs and exprected outputs)

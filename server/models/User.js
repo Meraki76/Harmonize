@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   spotifyUrl: String,
   profileImage: String,
   country: String,
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 module.exports = mongoose.model('User', userSchema);

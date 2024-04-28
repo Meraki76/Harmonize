@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Form, Button, Card } from 'react-bootstrap';
+import { Container, Form, Button, Card, FormCheck } from 'react-bootstrap';
 import axios from 'axios';
 import { SearchContext } from './SearchContext'; // Make sure this is set up as described earlier
 
@@ -9,12 +9,21 @@ function FeedPage({ userProfile }) {
     const [content, setContent] = useState('');
     const [tags, setTags] = useState({ artist: '', song: '', album: '' });
     const [posts, setPosts] = useState([]);
+    const [showFollowedPostsOnly, setShowFollowedPostsOnly] = useState(false); // State for checkbox
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (followedOnly = showFollowedPostsOnly) => {
         try {
-            const response = await axios.get(`http://localhost:8888/posts`, {
-                params: { artist: tags.artist, song: tags.song, album: tags.album, search: searchCriteria }
-            });
+            const userId = userProfile ? userProfile.userId : null;
+            const endpoint = `http://localhost:8888/posts`;
+            const params = {
+                artist: tags.artist, 
+                song: tags.song, 
+                album: tags.album, 
+                search: searchCriteria,
+                followedOnly: followedOnly, 
+                userId: userId
+            };
+            const response = await axios.get(endpoint, { params });
             setPosts(response.data);
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -23,7 +32,7 @@ function FeedPage({ userProfile }) {
 
     useEffect(() => {
         fetchPosts();
-    }, [searchCriteria, tags]); // Refetch posts when search criteria or tags change
+    }, [searchCriteria, tags]); 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,12 +40,12 @@ function FeedPage({ userProfile }) {
             alert("You need to be logged in to post.");
             return;
         }
+        const post = {
+            content,
+            tags,
+            user: userProfile.spotifyId
+        };
         try {
-            const post = {
-                content,
-                tags,
-                user: userProfile.spotifyId
-            };
             await axios.post('http://localhost:8888/posts', post);
             setContent('');
             setTags({ artist: '', song: '', album: '' });
@@ -47,11 +56,20 @@ function FeedPage({ userProfile }) {
         }
     };
 
-    useEffect(() => {
-        fetchPosts(); // Assuming this function fetches the posts and logs them
-      }, [userProfile]);
+    const toggleShowFollowedPostsOnly = () => {
+        setShowFollowedPostsOnly(prevState => {
+            const newState = !prevState;
+            fetchPosts(newState);
+            return newState;
+        });
+    };
+    
 
-      const deletePost = async (postId) => {
+    useEffect(() => {
+        fetchPosts(); // This will now be called whenever the checkbox value changes
+    }, [showFollowedPostsOnly]);
+
+    const deletePost = async (postId) => {
         try {
             await axios.delete(`http://localhost:8888/posts/${postId}`);
             fetchPosts(); // Refetch posts to update the UI
@@ -60,7 +78,21 @@ function FeedPage({ userProfile }) {
             alert('Failed to delete the post');
         }
     };
-      
+    
+    const likePost = async (postId) => {
+        try {
+            const { data } = await axios.post(`http://localhost:8888/posts/${postId}/like`, { userId: userProfile.userId });
+            setPosts(posts.map(post => {
+                if (post._id === postId) {
+                    return { ...post, likes: data.likes, likesCount: data.likesCount };
+                }
+                return post;
+            }));
+        } catch (error) {
+            console.error('Error liking the post:', error);
+        }
+    };
+    
     const renderPosts = () => {
         return posts.map((post) => (
             <Card key={post._id} className="mb-3">
@@ -70,7 +102,7 @@ function FeedPage({ userProfile }) {
                         <Link to={`/profile/${post.user.displayName}`}>
                             <img src={post.user.profileImage || 'https://via.placeholder.com/150'} alt="Profile" className="post-profile-image" />
                         </Link>
-                            <div>{post.user.displayName}</div> 
+                            <div>{post.user.displayName}</div>
                         </div>
                         <div className="tag-section">
                             {post.tags.artist && <div className="tag">Artist: {post.tags.artist}</div>}
@@ -81,7 +113,9 @@ function FeedPage({ userProfile }) {
                     <div className="post-main-content">
                         <Card.Text>{post.content}</Card.Text>
                         <div className="button-section">
-                            <button className="like-button">Like</button>
+                            <button className="like-button" onClick={() => likePost(post._id)}>
+                            Like ({post.likes.length})
+                            </button>
                             <button className="reply-button">Reply</button>
                             {userProfile && userProfile.spotifyId === post.user.spotifyId && <button className="delete-button" onClick={() => deletePost(post._id)}>Delete</button>}
                         </div>
@@ -125,9 +159,14 @@ function FeedPage({ userProfile }) {
                         onChange={e => setTags({ ...tags, album: e.target.value })}
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit">
-                    Post
-                </Button>
+                <Button variant="primary" type="submit">Post</Button>
+                <FormCheck
+                    type="checkbox"
+                    label="Show only followed users' posts"
+                    checked={showFollowedPostsOnly}
+                    onChange={toggleShowFollowedPostsOnly}
+                    className="mb-3"
+                />
             </Form>
             {renderPosts()}
         </Container>

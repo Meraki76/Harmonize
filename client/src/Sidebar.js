@@ -28,7 +28,7 @@ const Sidebar = ({ userProfile, onLogout }) => {
             <ul className="sidebar-menu">
                 <li><a href="/profile" onClick={handleProfileClick}>Profile</a></li> {/* Using 'a' tag with onClick handler for dynamic navigation */}
                 <li><Link to="/">Feed</Link></li>
-                <li><Link to="/friends">Friends</Link></li>
+                <li><Link to="/friends">Messages</Link></li>
             </ul>
             <div className="sidebar-footer">
                 <a href="#" onClick={onLogout}>Logout</a>

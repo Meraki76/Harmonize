@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProfilePage from './ProfilePage'; // Assume you have this component
 import FeedPage from './FeedPage'; // Assume you have this component
 import FriendsPage from './FriendsPage'; // Assume you have this component
+import ChatRoom from './ChatRoom';
 import './App.css';
 import SearchBar from './SearchBar';
 const spotifyApi = new SpotifyWebApi();
@@ -25,6 +26,7 @@ const getTokenFromUrl = () => {
 
 function App() {
   
+
   const [userProfile, setUserProfile] = useState(null);
   const [spotifyToken, setSpotifyToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
@@ -39,8 +41,10 @@ function App() {
   };
 
   useEffect(() => {
-    const { access_token, refresh_token, expires_in } = getTokenFromUrl();
-    window.location.hash = "";
+    const { access_token, refresh_token, expires_in, userId } = getTokenFromUrl();
+    // clear url
+
+    window.history.pushState({}, document.title, "/");
     if (access_token) {
       setSpotifyToken(access_token);
       setRefreshToken(refresh_token);
@@ -48,6 +52,7 @@ function App() {
       spotifyApi.setAccessToken(access_token);
       spotifyApi.getMe().then((user) => {
         setUserProfile({
+          userId: userId, 
           spotifyId: user.id,
           displayName: user.display_name,
           email: user.email,
@@ -95,16 +100,16 @@ function App() {
             <SearchProvider>
             <SearchBar />
             <Routes>
-              <Route path="/profile/:displayName" element={<ProfilePage />} />
+              <Route path="/profile/:displayName" element={<ProfilePage userProfile={userProfile} />} />
               <Route path="/" element={<FeedPage userProfile={userProfile} />} />
-              <Route path="/friends" element={<FriendsPage />} />
+              <Route path="/friends" element={<FriendsPage userProfile={userProfile} />} />
+              <Route path="/chat/:conversationId" element={<ChatRoom userProfile={userProfile} />} />
             </Routes>
             </SearchProvider>
             <Dashboard spotifyApi={spotifyApi} spotifyToken={spotifyToken} />
           </div>
         )}
       </div>
-      
     </Router>
   );
 }

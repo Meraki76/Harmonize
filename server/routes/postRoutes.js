@@ -8,27 +8,59 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         let query = {};
-        if (req.query.search) {
-            const users = await User.find({
-                displayName: { $regex: req.query.search, $options: 'i' }
-            });
 
+        if (req.query.followedOnly === 'true' && req.query.userId) {
+            // Fetch the list of user IDs the current user is following
+            const user = await User.findById(req.query.userId);
+            if (!user) return res.status(404).json({ message: "User not found" });
+            query.user = { $in: user.following }; // Filter posts by followed users
+        }
+
+        // Handle search functionality
+        if (req.query.search) {
+            const users = await User.find({ displayName: { $regex: req.query.search, $options: 'i' } });
             const userIds = users.map(user => user._id);
 
-            query = { $or: [
+            // Apply general search filter
+            query.$or = [
                 { 'tags.artist': { $regex: req.query.search, $options: 'i' } },
                 { 'tags.song': { $regex: req.query.search, $options: 'i' } },
                 { 'tags.album': { $regex: req.query.search, $options: 'i' } },
-                { 'user': { $in: userIds } }  
-            ]};
-        }
+                { 'user': { $in: userIds } }
+            ];
 
+        }
+        // Fetch posts based on the constructed query
         const posts = await Post.find(query).populate('user', 'displayName profileImage spotifyId').sort({ createdAt: -1 });
         res.json(posts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
+
+router.post('/:postId/like', async (req, res) => {
+    const { postId } = req.params;
+    const { userId } = req.body;
+
+    try {
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: "Post not found" });
+
+        const hasLiked = post.likes.includes(userId);
+        if (hasLiked) {
+            post.likes.pull(userId);
+        } else {
+            post.likes.push(userId);
+        }
+        await post.save();
+        res.status(200).json({ likes: post.likes, likesCount: post.likes.length });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
 // Create a new post
 router.post('/', async (req, res) => {
     const { content, tags, user: spotifyId } = req.body; 
